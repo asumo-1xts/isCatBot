@@ -61,14 +61,14 @@ async def on_message(message):
         try:
             is_cat_result = await asyncio.to_thread(is_cat, filepath)
             if is_cat_result:
-                await message.channel.send("これは猫です")
+                await message.reply("むむ、これは猫です", mention_author=False)
             else:
-                await message.channel.send("これは猫ではありません")
+                await message.reply("これは猫ではありません", mention_author=False)
         except ValueError as e:
-            await message.channel.send(f"画像形式エラー: {e}")
+            await message.reply(f"画像形式エラー: {e}", mention_author=False)
         except Exception as e:
             print(f"猫判定エラー: {e}")
-            await message.channel.send("猫判定でエラーが発生しました")
+            await message.reply("猫判定でエラーが発生しました", mention_author=False)
 
 
 client.run(TOKEN)
