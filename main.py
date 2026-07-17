@@ -33,7 +33,7 @@ async def on_ready():
 async def on_message(message):
     # テストコマンド
     if message.content == "!neko":
-        await message.channel.send("にゃーん")
+        await message.channel.send("v1.0.0: にゃーん")
         return
 
     # Bot自身のメッセージは無視
