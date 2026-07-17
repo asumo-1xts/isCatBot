@@ -1,6 +1,8 @@
+import asyncio
 import os
 
 import discord
+import shutil
 from dotenv import load_dotenv
 
 from functions import is_cat
@@ -8,11 +10,8 @@ from functions import is_cat
 load_dotenv()
 
 TOKEN = os.getenv("DISCORD_TOKEN")
-CHANNEL_ID = int(os.getenv("CHANNEL_ID"))
+CH_ID = int(os.getenv("CHANNEL_ID"))
 IMAGE_DIR = "images"
-
-# 保存先ディレクトリ
-os.makedirs(IMAGE_DIR, exist_ok=True)
 
 # Intentsを設定
 intents = discord.Intents.default()
@@ -24,7 +23,7 @@ client = discord.Client(intents=intents)
 @client.event
 async def on_ready():
     print(f"ログインしました: {client.user}")
-    channel = client.get_channel(CHANNEL_ID)
+    channel = client.get_channel(CH_ID)
     if channel is not None:
         await channel.send("猫判定botがログインしました")
 
@@ -50,16 +49,26 @@ async def on_message(message):
         ):
             continue
 
-        # 添付画像を保存
+        # 空のディレクトリに添付画像を保存
+        if os.path.exists(IMAGE_DIR):
+            shutil.rmtree(IMAGE_DIR)
+        os.makedirs(IMAGE_DIR, exist_ok=True)
         filepath = os.path.join(IMAGE_DIR, attachment.filename)
         await attachment.save(filepath)
         print(f"保存しました: {filepath}")
 
         # 猫判定
-        if is_cat(filepath):
-            await message.channel.send("これは猫です")
-        else:
-            await message.channel.send("これは猫ではありません")
+        try:
+            is_cat_result = await asyncio.to_thread(is_cat, filepath)
+            if is_cat_result:
+                await message.channel.send("これは猫です")
+            else:
+                await message.channel.send("これは猫ではありません")
+        except ValueError as e:
+            await message.channel.send(f"画像形式エラー: {e}")
+        except Exception as e:
+            print(f"猫判定エラー: {e}")
+            await message.channel.send("猫判定でエラーが発生しました")
 
 
 client.run(TOKEN)
