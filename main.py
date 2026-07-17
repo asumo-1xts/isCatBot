@@ -60,15 +60,22 @@ async def on_message(message):
         # 猫判定
         try:
             is_cat_result = await asyncio.to_thread(is_cat, filepath)
-            if is_cat_result:
+            if is_cat_result == 1:
                 await message.reply("むむ、これは猫です", mention_author=False)
+            elif is_cat_result == 0:
+                await message.add_reaction("👀")
             else:
-                await message.reply("これは猫ではありません", mention_author=False)
-        except ValueError as e:
-            await message.reply(f"画像形式エラー: {e}", mention_author=False)
-        except Exception as e:
-            print(f"猫判定エラー: {e}")
-            await message.reply("猫判定でエラーが発生しました", mention_author=False)
+                await message.reply(
+                    "Geminiに意地悪されています。人間、対応せよ", mention_author=False
+                )
+                exit(1)
+        except ValueError:
+            await message.add_reaction("❌")
+        except Exception:
+            await message.reply(
+                "謎のエラーが発生しました。人間、対応せよ", mention_author=False
+            )
+            exit(1)
 
 
 client.run(TOKEN)

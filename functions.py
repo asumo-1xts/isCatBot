@@ -15,7 +15,7 @@ MODEL_CANDIDATES = (
 
 
 # 猫判定関数
-def is_cat(image_path: str) -> bool:
+def is_cat(image_path: str) -> int:
     # 画像のMIMEタイプを判定
     mime_type, _ = mimetypes.guess_type(image_path)
 
@@ -33,7 +33,6 @@ def is_cat(image_path: str) -> bool:
     # Geminiに投げる
     prompt = "この画像に猫は写っていますか？YESまたはNOの1語だけで答えてください。"
 
-    last_error = None
     for model in MODEL_CANDIDATES:
         try:
             response = client.models.generate_content(
@@ -45,9 +44,8 @@ def is_cat(image_path: str) -> bool:
             )
             output_text = (response.text or "").strip().upper()
             print(f"[{model}] {output_text}")
-            return "YES" in output_text
-        except Exception as e:
-            last_error = e
-            continue
+            return 1 if "YES" in output_text else 0
+        except Exception:
+            continue  # ダメなら別のモデルで再試行
 
-    raise RuntimeError("Geminiへの問い合わせに失敗しました") from last_error
+    return 2  # すべてのモデルで失敗
