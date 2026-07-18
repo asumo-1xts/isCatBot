@@ -31,26 +31,27 @@ async def on_ready():
 # メッセージ受信時のイベントハンドラ
 @client.event
 async def on_message(message):
-    # 指定されたチャンネル以外は無視
-    if message.channel.id != CH_ID:
-        return
-
     # テストコマンド
     if message.content == "!neko":
         await message.channel.send("v1.0.0: にゃーん")
         return
 
-    # Bot自身のメッセージは無視
+    # 指定されたチャンネル以外は無視
+    if message.channel.id != CH_ID:
+        return
+
     # 添付ファイルがない場合も無視
-    if message.author.bot or not message.attachments:
+    if not message.attachments:
         return
 
     # 添付ファイルを精査
     for attachment in message.attachments:
-        # 画像以外は無視
-        if attachment.content_type is None or not attachment.content_type.startswith(
-            "image/"
-        ):
+        # ファイル形式が不明の場合は無視
+        if attachment.content_type is None:
+            continue
+
+        # ファイル形式が画像でない場合も無視
+        if not attachment.content_type.startswith("image/"):
             continue
 
         # 空のディレクトリに添付画像を保存
