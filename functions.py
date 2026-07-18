@@ -1,6 +1,7 @@
 import mimetypes
 import os
 from dotenv import load_dotenv
+from enum import Enum
 from google import genai
 from google.genai import types
 
@@ -14,12 +15,18 @@ MODEL_CANDIDATES = (
 )
 
 
+# Geminiの返答の型を定義
+class IsCat(str, Enum):
+    YES = "YES"
+    NO = "NO"
+
+
 # 猫判定関数
 def is_cat(image_path: str) -> int:
     # 画像のMIMEタイプを判定
     mime_type, _ = mimetypes.guess_type(image_path)
 
-    if mime_type not in (
+    if mime_type is None or mime_type not in (
         "image/jpeg",
         "image/png",
         "image/webp",
@@ -31,20 +38,22 @@ def is_cat(image_path: str) -> int:
         image_data = f.read()
 
     # Geminiに投げる
-    prompt = "この画像に猫は写っていますか？YESまたはNOの1語だけで答えてください。"
-
     for model in MODEL_CANDIDATES:
         try:
             response = client.models.generate_content(
                 model=model,
                 contents=[
-                    prompt,
+                    "この画像に猫は写っていますか？",
                     types.Part.from_bytes(data=image_data, mime_type=mime_type),
                 ],
+                config=types.GenerateContentConfig(
+                    response_mime_type="text/x.enum",
+                    response_schema=IsCat,
+                ),
             )
-            output_text = (response.text or "").strip().upper()
-            print(f"[{model}] {output_text}")
-            return 1 if "YES" in output_text else 0
+            answer = IsCat(response.text.strip())
+            print(f"[{model}] {answer}")
+            return 1 if answer is IsCat.YES else 0
         except Exception:
             continue  # ダメなら別のモデルで再試行
 
