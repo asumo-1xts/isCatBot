@@ -31,6 +31,10 @@ async def on_ready():
 # メッセージ受信時のイベントハンドラ
 @client.event
 async def on_message(message):
+    # 指定されたチャンネル以外は無視
+    if message.channel.id != CH_ID:
+        return
+
     # テストコマンド
     if message.content == "!neko":
         await message.channel.send("v1.0.0: にゃーん")
