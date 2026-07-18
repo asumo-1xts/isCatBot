@@ -33,7 +33,7 @@ async def on_ready():
 async def on_message(message):
     # テストコマンド
     if message.content == "!neko":
-        await message.channel.send("v1.0.0: にゃーん")
+        await message.channel.send("v1.1.0: にゃーん")
         return
 
     # 指定されたチャンネル以外は無視
