@@ -1,5 +1,6 @@
 import asyncio
 import os
+import random
 
 import discord
 import shutil
@@ -66,7 +67,10 @@ async def on_message(message):
         try:
             is_cat_result = await asyncio.to_thread(is_cat, filepath)
             if is_cat_result == 1:
-                await message.reply("むむ、これは猫です", mention_author=False)
+                message_text = (
+                    "む、こ猫" if random.random() < 0.05 else "むむ、これは猫です"
+                )
+                await message.reply(message_text, mention_author=False)
             elif is_cat_result == 0:
                 await message.add_reaction("👀")
             else:
