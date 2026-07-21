@@ -1,8 +1,8 @@
 [project]
 name = "iscatbot"
-version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
+version = "1.1.1"
+description = "投稿された画像に猫が映っているかどうかを判定するDiscord botです。"
+readme = ".github/README.md"
 requires-python = ">=3.13"
 dependencies = [
     "discord-py>=2.7.1",
