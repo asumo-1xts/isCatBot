@@ -13,6 +13,7 @@ load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 CH_ID = int(os.getenv("CHANNEL_ID"))
 IMAGE_DIR = "images"
+VERSION = "v1.1.1"
 
 # Intentsを設定
 intents = discord.Intents.default()
@@ -38,7 +39,7 @@ async def on_message(message):
 
     # テストコマンド
     if message.content == "!neko":
-        await message.channel.send("v1.1.0: にゃーん")
+        await message.channel.send(f"{VERSION}: にゃーん")
         return
 
     # 添付ファイルがない場合も無視
